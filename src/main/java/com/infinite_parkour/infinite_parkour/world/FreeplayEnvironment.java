@@ -21,23 +21,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class FreeplayEnvironment implements IEnvironment {
+public class FreeplayEnvironment extends BaseEnvironment {
 	private static final ResourceLocation STRUCT_TOP = InfiniteParkour.loc("freeplay_top");
 	private static final ResourceLocation STRUCT_BOT = InfiniteParkour.loc("freeplay_bottom");
 
-	private final ServerPlayer player;
-	private EnvironmentManager manager;
-	private ServerLevel level;
-	private Map<UUID, Runnable> actions = new HashMap<>();
-
 	public FreeplayEnvironment(ServerPlayer player) {
-		this.player = player;
+		super(player);
 	}
 
 	@Override
 	public void onStart(EnvironmentManager manager) {
-		this.manager = manager;
-		this.level = manager.getLevel();
+		super.onStart(manager);
 		IPKUtils.placeStructure(level, new BlockPos(-15, -11, -15), STRUCT_TOP);
 		IPKUtils.placeStructure(level, new BlockPos(-15, -42, -15), STRUCT_BOT);
 		player.teleportTo(level, 0.5, 0, 0.5, Collections.emptySet(), 0, 0, true);
@@ -78,40 +72,8 @@ public class FreeplayEnvironment implements IEnvironment {
 	}
 
 	@Override
-	public void onTick(EnvironmentManager manager) {
-		if (player.hasDisconnected() || player.level() != manager.getLevel()) {
-			manager.delete();
-		}
-	}
-
-	@Override
 	public void onEnd(EnvironmentManager manager) {
 
-	}
-
-	private void createInteraction(double x, double y, double z, float width, float height, Runnable action) {
-		Interaction interaction = new Interaction(EntityType.INTERACTION, level);
-		interaction.setPos(x, y, z);
-		interaction.setWidth(width);
-		interaction.setHeight(height);
-		level.addFreshEntity(interaction);
-		actions.put(interaction.getUUID(), action);
-	}
-
-	private void createTextDisplay(double x, double y, double z, float yRot, Component text) {
-		Display.TextDisplay display = new Display.TextDisplay(EntityType.TEXT_DISPLAY, level);
-		display.setPos(x, y, z);
-		display.setText(text);
-		display.setYRot(yRot);
-		level.addFreshEntity(display);
-	}
-
-	private void createTextDisplay(double x, double y, double z, Component text) {
-		Display.TextDisplay display = new Display.TextDisplay(EntityType.TEXT_DISPLAY, level);
-		display.setPos(x, y, z);
-		display.setText(text);
-		display.setBillboardConstraints(Display.BillboardConstraints.VERTICAL);
-		level.addFreshEntity(display);
 	}
 
 	private void createBuilder(double x, double z, float yRot, String name, String title, int color) {
@@ -122,6 +84,7 @@ public class FreeplayEnvironment implements IEnvironment {
 				() -> player.displayClientMessage(Component.literal("Thanks to " + name), false)
 		);
 	}
+
 	public static final HoverEvent HOVER_CLICK = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click").withStyle(ChatFormatting.GRAY, ChatFormatting.BOLD));
 	public static final Component YOUTUBE_COMPONENT = Component.literal("Click here to visit the BigConGaming's youtube channel")
 			.withStyle(style -> style
@@ -149,20 +112,6 @@ public class FreeplayEnvironment implements IEnvironment {
 
 	private void teleportEditor() {
 		manager.delete();
-		EnvironmentManager editor = EnvironmentManager.create(new IEnvironment() {});
-		player.teleportTo(editor.getLevel(), 0, 0, 0, Collections.emptySet(), 0, 0, true);
-	}
-
-
-	@Override
-	public InteractionResult onInteract(EnvironmentManager manager, Player player, InteractionHand interactionHand, Entity entity, @Nullable EntityHitResult entityHitResult) {
-		Runnable action = actions.get(entity.getUUID());
-		if (action == null) {
-			return InteractionResult.PASS;
-		}
-		if (entityHitResult == null) {
-			action.run();
-		}
-		return InteractionResult.SUCCESS;
+		EnvironmentManager.create(new EditorEnvironment(player));
 	}
 }

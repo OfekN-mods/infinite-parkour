@@ -7,19 +7,11 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.player.UseEntityCallback;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.level.Level;
 
 public class InfiniteParkour implements ModInitializer {
 	public static final String MODID = "infinite_parkour";
-	private static final ResourceKey<Level> LEVEL_ID = ResourceKey.create(
-			Registries.DIMENSION,
-			InfiniteParkour.loc("dimension")
-	);
 
 
 	@Override

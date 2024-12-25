@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 public interface IEnvironment {
 	default void onStart(EnvironmentManager manager) {}
-	default void onTick(EnvironmentManager manager) {}
+	default boolean onTick(EnvironmentManager manager) { return false; }
 	default void onEnd(EnvironmentManager manager) {}
 	default InteractionResult onInteract(EnvironmentManager manager, Player player, InteractionHand interactionHand, Entity entity, @Nullable EntityHitResult entityHitResult) { return InteractionResult.PASS; }
 }

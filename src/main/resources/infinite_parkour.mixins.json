@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.infinite_parkour.infinite_parkour_mod.mixin",
+  "package": "com.infinite_parkour.infinite_parkour.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
   ],
