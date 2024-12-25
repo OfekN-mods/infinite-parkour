@@ -1,0 +1,4 @@
+@MethodsReturnNonnullByDefault
+package com.infinite_parkour.infinite_parkour.world;
+
+import net.minecraft.MethodsReturnNonnullByDefault;

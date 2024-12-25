@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "infinite_parkour",
+  "version": "${version}",
+  "name": "InfiniteParkour",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/infinite_parkour/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "com.infinite_parkour.infinite_parkour.InfiniteParkour"
+    ]
+  },
+  "mixins": [
+    "infinite_parkour.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
