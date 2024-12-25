@@ -39,7 +39,7 @@ public abstract class BaseEnvironment implements IEnvironment {
 	}
 
 	@Override
-	public InteractionResult onInteract(EnvironmentManager manager, Player player, InteractionHand interactionHand, Entity entity, @Nullable EntityHitResult entityHitResult) {
+	public InteractionResult onUseEntity(EnvironmentManager manager, Player player, InteractionHand interactionHand, Entity entity, @Nullable EntityHitResult entityHitResult) {
 		Runnable action = actions.get(entity.getUUID());
 		if (action == null) {
 			return InteractionResult.PASS;

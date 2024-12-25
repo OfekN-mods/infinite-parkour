@@ -2,8 +2,10 @@ package com.infinite_parkour.infinite_parkour.world;
 
 import com.google.common.collect.ImmutableList;
 import com.infinite_parkour.infinite_parkour.InfiniteParkour;
-import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.fabricmc.fabric.api.event.player.*;
 import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -19,10 +21,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.storage.DerivedLevelData;
 import net.minecraft.world.level.storage.LevelStorageSource;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.util.Files;
@@ -45,10 +50,11 @@ public final class EnvironmentManager {
 	}
 
 	public static void onTick() {
-		//conversion to array to get rid of ConcurrentModificationException
-		EnvironmentManager[] levels = BY_ID.values().toArray(EnvironmentManager[]::new);
-		for (EnvironmentManager level : levels) {
-			level.environment.onTick(level);
+		EnvironmentManager[] managers = BY_ID.values().toArray(EnvironmentManager[]::new);
+		for (EnvironmentManager manager : managers) {
+			if (manager.environment.onTick(manager)) {
+				manager.delete();
+			}
 		}
 	}
 
@@ -65,6 +71,10 @@ public final class EnvironmentManager {
 
 	public static void registerEvents() {
 		UseEntityCallback.EVENT.register(EnvironmentManager::useEntityCallback);
+		UseItemCallback.EVENT.register(EnvironmentManager::useItemCallback);
+		UseBlockCallback.EVENT.register(EnvironmentManager::useBlockCallback);
+		AttackBlockCallback.EVENT.register(EnvironmentManager::attackBlockCallback);
+		PlayerBlockBreakEvents.BEFORE.register(EnvironmentManager::blockBreakEvent);
 	}
 
 	private static InteractionResult useEntityCallback(Player player, Level level, InteractionHand interactionHand, Entity entity, @Nullable EntityHitResult entityHitResult) {
@@ -72,7 +82,39 @@ public final class EnvironmentManager {
 		if (manager == null) {
 			return InteractionResult.PASS;
 		}
-		return manager.environment.onInteract(manager, player, interactionHand, entity, entityHitResult);
+		return manager.environment.onUseEntity(manager, player, interactionHand, entity, entityHitResult);
+	}
+
+	private static InteractionResult useItemCallback(Player player, Level level, InteractionHand interactionHand) {
+		EnvironmentManager manager = getByLevel(level);
+		if (manager == null) {
+			return InteractionResult.PASS;
+		}
+		return manager.environment.onUseItem(manager, player, interactionHand);
+	}
+
+	private static InteractionResult useBlockCallback(Player player, Level level, InteractionHand interactionHand, BlockHitResult blockHitResult) {
+		EnvironmentManager manager = getByLevel(level);
+		if (manager == null) {
+			return InteractionResult.PASS;
+		}
+		return manager.environment.onUseBlock(manager, player, interactionHand, blockHitResult);
+	}
+
+	private static InteractionResult attackBlockCallback(Player player, Level level, InteractionHand interactionHand, BlockPos blockPos, Direction direction) {
+		EnvironmentManager manager = getByLevel(level);
+		if (manager == null) {
+			return InteractionResult.PASS;
+		}
+		return manager.environment.onAttackBlock(manager, player, interactionHand, blockPos, direction);
+	}
+
+	private static boolean blockBreakEvent(Level level, Player player, BlockPos blockPos, BlockState state, @Nullable BlockEntity blockEntity) {
+		EnvironmentManager manager = getByLevel(level);
+		if (manager == null) {
+			return true;
+		}
+		return manager.environment.onBreakBlock(manager, player, blockPos, state, blockEntity);
 	}
 
 	public static EnvironmentManager create(IEnvironment environment) {

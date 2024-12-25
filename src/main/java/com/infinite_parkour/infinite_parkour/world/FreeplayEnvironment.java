@@ -7,19 +7,13 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Display;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Interaction;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collections;
 
 public class FreeplayEnvironment extends BaseEnvironment {
 	private static final ResourceLocation STRUCT_TOP = InfiniteParkour.loc("freeplay_top");
@@ -72,8 +66,8 @@ public class FreeplayEnvironment extends BaseEnvironment {
 	}
 
 	@Override
-	public void onEnd(EnvironmentManager manager) {
-
+	public boolean onBreakBlock(EnvironmentManager manager, Player player, BlockPos blockPos, BlockState state, @Nullable BlockEntity blockEntity) {
+		return false;
 	}
 
 	private void createBuilder(double x, double z, float yRot, String name, String title, int color) {
