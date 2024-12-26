@@ -2,11 +2,9 @@ package com.infinite_parkour.infinite_parkour.commands;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 
 public abstract class IPKCommand implements Command<CommandSourceStack> {
 	public final String name;

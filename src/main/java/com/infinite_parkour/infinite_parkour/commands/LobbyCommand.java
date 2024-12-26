@@ -1,8 +1,6 @@
 package com.infinite_parkour.infinite_parkour.commands;
 
-import com.infinite_parkour.infinite_parkour.world.EnvironmentManager;
 import com.infinite_parkour.infinite_parkour.world.IPKLevels;
-import com.infinite_parkour.infinite_parkour.world.editor.EditorEnvironment;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;

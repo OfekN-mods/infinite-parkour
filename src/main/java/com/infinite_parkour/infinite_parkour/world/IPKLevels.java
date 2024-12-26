@@ -11,7 +11,6 @@ import net.minecraft.world.level.Level;
 
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Set;
 
 public final class IPKLevels {
 	private static ServerLevel lobby;
