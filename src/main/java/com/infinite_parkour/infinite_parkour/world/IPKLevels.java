@@ -6,9 +6,12 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 
+import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
 
 public final class IPKLevels {
 	private static ServerLevel lobby;
@@ -20,6 +23,10 @@ public final class IPKLevels {
 
 	public static ServerLevel getLanes() {
 		return lanes;
+	}
+
+	public static void teleportLobby(ServerPlayer player) {
+		player.teleportTo(getLobby(), 0.5, 0, 0.5, Collections.emptySet(), 0, 0, true);
 	}
 
 	public static void onStart(MinecraftServer server) {

@@ -10,9 +10,10 @@ public final class CommandsRegister {
 	private CommandsRegister() {}
 
 	private static final IPKCommand[] COMMANDS = {
-			new RegenerateChunkCommand(),
+			new LobbyCommand(),
+			new FreeplayCommand(),
+			new EditorCommand(),
 			new TestCommand(),
-			new FreeplayCommand()
 	};
 
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context, Commands.CommandSelection selection) {

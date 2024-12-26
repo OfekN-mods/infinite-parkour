@@ -2,6 +2,7 @@ package com.infinite_parkour.infinite_parkour.commands;
 
 import com.infinite_parkour.infinite_parkour.world.EnvironmentManager;
 import com.infinite_parkour.infinite_parkour.world.IEnvironment;
+import com.infinite_parkour.infinite_parkour.world.IPKLevels;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -16,25 +17,16 @@ public class TestCommand extends IPKCommand {
 	}
 
 	@Override
-	public int run(CommandContext<CommandSourceStack> context) {
-		CommandSourceStack source = context.getSource();
-		if (source.getEntity() instanceof ServerPlayer player) {
-			run(player);
-			return Command.SINGLE_SUCCESS;
-		}
-		source.sendFailure(Component.literal("you're not a player"));
-		return 0;
-	}
-
-	private void run(ServerPlayer player) {
+	public int run(CommandContext<CommandSourceStack> context, ServerPlayer player) {
 		var manager = EnvironmentManager.getByLevel(player.level());
 		if (manager != null) {
-			player.teleportTo(player.server.overworld(), 0, 68, 0, Collections.emptySet(), 0, 0, true);
+			IPKLevels.teleportLobby(player);
 			manager.delete();
-			return;
+			return Command.SINGLE_SUCCESS;
 		}
 
 		manager = EnvironmentManager.create(new IEnvironment() {});
 		player.teleportTo(manager.getLevel(), 0, 0, 0, Collections.emptySet(), 0, 0, true);
+		return Command.SINGLE_SUCCESS;
 	}
 }

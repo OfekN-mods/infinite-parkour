@@ -42,11 +42,18 @@ import java.util.UUID;
 
 public final class EnvironmentManager {
 	private static MinecraftServer currentServer;
+	private static LevelStorageSource.LevelStorageAccess storageAccess;
 	private static final Map<UUID, EnvironmentManager> BY_ID = new HashMap<>();
 	private static final Map<ResourceLocation, EnvironmentManager> BY_LOC = new HashMap<>();
 
 	public static void onStart(MinecraftServer server) {
 		currentServer = server;
+		var source = LevelStorageSource.createDefault(Path.of("."));
+		try {
+			storageAccess = source.createAccess("tempworlds");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public static void onTick() {
@@ -60,6 +67,11 @@ public final class EnvironmentManager {
 
 	public static void onStop() {
 		currentServer = null;
+		try {
+			storageAccess.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		BY_ID.clear();
 		BY_LOC.clear();
 		try {
@@ -219,7 +231,7 @@ public final class EnvironmentManager {
 		ServerLevel newLevel = new ServerLevel(
 				server,
 				Util.backgroundExecutor(),
-				storageAccess(),
+				storageAccess,
 				derivedLevelData,
 				key,
 				getStem(server),
@@ -232,15 +244,6 @@ public final class EnvironmentManager {
 		);
 		server.levels.put(key, newLevel);
 		return newLevel;
-	}
-
-	private static LevelStorageSource.LevelStorageAccess storageAccess() {
-		var source = LevelStorageSource.createDefault(Path.of("."));
-		try {
-			return source.createAccess("tempworlds");
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	private static LevelStem getStem(MinecraftServer server) {

@@ -1,6 +1,7 @@
 package com.infinite_parkour.infinite_parkour.world;
 
 import com.infinite_parkour.infinite_parkour.InfiniteParkour;
+import com.infinite_parkour.infinite_parkour.world.editor.EditorEnvironment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.ClickEvent;
