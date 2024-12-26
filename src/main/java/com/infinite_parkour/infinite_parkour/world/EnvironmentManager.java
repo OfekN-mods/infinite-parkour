@@ -21,6 +21,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
@@ -241,7 +242,12 @@ public final class EnvironmentManager {
 				ImmutableList.of(),
 				false,
 				randomSequences
-		);
+		) {
+			@Override
+			public void blockUpdated(BlockPos blockPos, Block block) {
+//				super.blockUpdated(blockPos, block);
+			}
+		};
 		server.levels.put(key, newLevel);
 		return newLevel;
 	}

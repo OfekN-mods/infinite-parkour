@@ -1,5 +1,7 @@
 package com.infinite_parkour.infinite_parkour.world.editor;
 
+import com.infinite_parkour.infinite_parkour.data.JumpBlockData;
+import com.infinite_parkour.infinite_parkour.data.JumpData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.TrailParticleOption;
@@ -19,6 +21,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class EditorCanvas {
@@ -32,14 +35,50 @@ public class EditorCanvas {
 		this.player = player;
 	}
 
+	public JumpData save(ServerLevel level, JumpData base) {
+		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+		List<JumpBlockData> resultBlocks = blocks.stream().map(posInt -> {
+			intToPos(posInt, pos);
+			var state = level.getBlockState(pos);
+			return new JumpBlockData(posInt, state);
+		}).toList();
+		List<Long> resultTrails = trails.stream().toList();
+		return new JumpData(resultBlocks, resultTrails, base.weight());
+	}
+
+	public void clear(ServerLevel level) {
+		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+		for (int posInt : blocks) {
+			intToPos(posInt, pos);
+			level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+		}
+		blocks.clear();
+		trails.clear();
+		trailFirstPos = null;
+	}
+
+	public void load(ServerLevel level, JumpData jumpData) {
+		clear(level);
+		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+		for (JumpBlockData block : jumpData.blocks()) {
+			intToPos(block.pos(), pos);
+			level.setBlock(pos, block.state(), 2);
+			blocks.add(block.pos());
+		}
+		trails.addAll(jumpData.trails());
+	}
 
 	public final void tick(ServerLevel level) {
 		breakBlock(level);
 		if (trailFirstPos != null) {
-			double x = trailFirstPos.getX() + 0.5;
-			double y = trailFirstPos.getY() + 1.5;
-			double z = trailFirstPos.getZ() + 0.5;
-			level.sendParticles(ParticleTypes.WITCH, x, y, z, 1, 0, 0, 0, 0);
+			if (blocks.contains(posToInt(trailFirstPos))) {
+				double x = trailFirstPos.getX() + 0.5;
+				double y = trailFirstPos.getY() + 1.5;
+				double z = trailFirstPos.getZ() + 0.5;
+				level.sendParticles(ParticleTypes.WITCH, x, y, z, 1, 0, 0, 0, 0);
+			} else {
+				trailFirstPos = null;
+			}
 		}
 		Iterator<Long> trailIterator = trails.iterator();
 		while (trailIterator.hasNext()) {
@@ -84,6 +123,12 @@ public class EditorCanvas {
 		return pos.getX() | pos.getY() << 6 | pos.getZ() << 12;
 	}
 
+	private void intToPos(int posInt, BlockPos.MutableBlockPos pos) {
+		pos.setX(posInt & 0x3F);
+		pos.setY((posInt >> 6) & 0x3F);
+		pos.setZ((posInt >> 12) & 0x3F);
+	}
+
 	public InteractionResult useBlock(ServerLevel level, InteractionHand interactionHand, BlockHitResult blockHitResult) {
 		BlockPos pos = blockHitResult.getBlockPos();
 		BlockState blockState = level.getBlockState(pos);
@@ -107,7 +152,11 @@ public class EditorCanvas {
 				trailFirstPos = pos;
 			} else {
 				if (!trailFirstPos.equals(pos)) {
-					long trail = (long)posToInt(pos) << 18 | posToInt(trailFirstPos);
+					int p0 = posToInt(trailFirstPos);
+					int p1 = posToInt(pos);
+					long trail = (long)p1 << 18 | p0;
+					long trailRev = (long)p0 << 18 | p1;
+					trails.remove(trailRev);
 					if (!trails.add(trail)) {
 						trails.remove(trail);
 					}
