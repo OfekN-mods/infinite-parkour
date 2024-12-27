@@ -1,4 +1,4 @@
-package com.infinite_parkour.infinite_parkour.world.editor;
+package com.infinite_parkour.infinite_parkour.environment.editor;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.item.component.ItemLore;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,7 @@ public enum EditorItem {
 
 	public final ItemStack stack;
 
-	EditorItem(Item item, boolean tool, String name, String... lore) {
+	EditorItem(Item item, boolean tool, @Nullable String name, String... lore) {
 		if (tool) {
 			stack = new ItemStack(Items.STICK);
 			stack.set(DataComponents.ITEM_MODEL, item.components().get(DataComponents.ITEM_MODEL));

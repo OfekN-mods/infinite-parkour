@@ -7,15 +7,16 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
-public class TestCommand extends IPKCommand {
-	public TestCommand() {
-		super("test");
+public class DeleteLevelCommand extends IPKCommand {
+	public DeleteLevelCommand() {
+		super("delete_level");
 	}
 
 	@Override
 	public int run(CommandContext<CommandSourceStack> context, ServerPlayer player) {
 		var manager = Environment.getByLevel(player.level());
 		if (manager != null) {
+			manager.delete();
 			return Command.SINGLE_SUCCESS;
 		}
 		context.getSource().sendFailure(Component.literal("you're not in a dynamic level"));

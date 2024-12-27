@@ -1,7 +1,8 @@
-package com.infinite_parkour.infinite_parkour.world;
+package com.infinite_parkour.infinite_parkour.environment;
 
 import com.infinite_parkour.infinite_parkour.InfiniteParkour;
-import com.infinite_parkour.infinite_parkour.world.editor.EditorEnvironment;
+import com.infinite_parkour.infinite_parkour.environment.editor.EditorEnvironment;
+import com.infinite_parkour.infinite_parkour.IPKUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.ClickEvent;
@@ -16,17 +17,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 
-public class FreeplayEnvironment extends BaseEnvironment {
+public class FreeplayEnvironment extends SinglePlayerEnvironment {
 	private static final ResourceLocation STRUCT_TOP = InfiniteParkour.loc("freeplay_top");
 	private static final ResourceLocation STRUCT_BOT = InfiniteParkour.loc("freeplay_bottom");
 
 	public FreeplayEnvironment(ServerPlayer player) {
 		super(player);
-	}
-
-	@Override
-	public void onStart(EnvironmentManager manager) {
-		super.onStart(manager);
 		IPKUtils.placeStructure(level, new BlockPos(-15, -11, -15), STRUCT_TOP);
 		IPKUtils.placeStructure(level, new BlockPos(-15, -42, -15), STRUCT_BOT);
 		player.teleportTo(level, 0.5, 0, 0.5, Collections.emptySet(), 0, 0, true);
@@ -67,7 +63,7 @@ public class FreeplayEnvironment extends BaseEnvironment {
 	}
 
 	@Override
-	public boolean onBreakBlock(EnvironmentManager manager, Player player, BlockPos blockPos, BlockState state, @Nullable BlockEntity blockEntity) {
+	public boolean onBreakBlock(Player player, BlockPos blockPos, BlockState state, @Nullable BlockEntity blockEntity) {
 		return false;
 	}
 
@@ -106,7 +102,7 @@ public class FreeplayEnvironment extends BaseEnvironment {
 	}
 
 	private void teleportEditor() {
-		manager.delete();
-		EnvironmentManager.create(new EditorEnvironment(player));
+		delete();
+		new EditorEnvironment(player);
 	}
 }

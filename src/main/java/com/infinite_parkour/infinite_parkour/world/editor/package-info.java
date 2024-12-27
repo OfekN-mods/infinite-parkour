@@ -1,4 +1,0 @@
-@MethodsReturnNonnullByDefault
-package com.infinite_parkour.infinite_parkour.world.editor;
-
-import net.minecraft.MethodsReturnNonnullByDefault;

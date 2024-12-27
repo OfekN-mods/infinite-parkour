@@ -1,4 +1,4 @@
-@MethodsReturnNonnullByDefault
+@NonnullByDefault
 package com.infinite_parkour.infinite_parkour.commands;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
+import com.infinite_parkour.infinite_parkour.utils.NonnullByDefault;

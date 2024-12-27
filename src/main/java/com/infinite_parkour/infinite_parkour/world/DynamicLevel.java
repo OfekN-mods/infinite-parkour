@@ -87,6 +87,7 @@ public final class DynamicLevel extends ServerLevel {
 		return ResourceKey.create(Registries.DIMENSION, loc);
 	}
 
+	private boolean closed;
 	private final Runnable onClose;
 
 	public DynamicLevel(Runnable onClose) {
@@ -111,6 +112,10 @@ public final class DynamicLevel extends ServerLevel {
 
 	@Override
 	public void close() {
+		if (closed) {
+			return;
+		}
+		closed = true;
 		ResourceKey<Level> key = dimension();
 		ResourceLocation id = key.location();
 		LOGGER.info("Closing level {}", id);
@@ -120,8 +125,7 @@ public final class DynamicLevel extends ServerLevel {
 		} catch (IOException e) {
 			LOGGER.error("Couldn't close level {}", id, e);
 		}
-		//noinspection resource
-		getServer().levels.remove(key);
+		getServer().levels.remove(key, this);
 		try {
 			String namespace = id.getNamespace();
 			String path = id.getPath();
@@ -129,5 +133,9 @@ public final class DynamicLevel extends ServerLevel {
 		} catch (IOException e) {
 			LOGGER.error("Couldn't delete level {}", id, e);
 		}
+	}
+
+	public boolean isClosed() {
+		return closed;
 	}
 }

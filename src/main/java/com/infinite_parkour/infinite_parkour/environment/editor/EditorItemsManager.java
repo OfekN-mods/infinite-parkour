@@ -1,4 +1,4 @@
-package com.infinite_parkour.infinite_parkour.world.editor;
+package com.infinite_parkour.infinite_parkour.environment.editor;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.player.Inventory;

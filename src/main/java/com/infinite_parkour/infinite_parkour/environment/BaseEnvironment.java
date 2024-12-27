@@ -1,8 +1,6 @@
-package com.infinite_parkour.infinite_parkour.world;
+package com.infinite_parkour.infinite_parkour.environment;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Display;
@@ -17,29 +15,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public abstract class BaseEnvironment implements IEnvironment {
-	protected final ServerPlayer player;
-	protected EnvironmentManager manager;
-	protected ServerLevel level;
+public abstract class BaseEnvironment extends Environment {
 	private final Map<UUID, Runnable> actions = new HashMap<>();
 
-	protected BaseEnvironment(ServerPlayer player) {
-		this.player = player;
-	}
+	protected BaseEnvironment() {}
 
 	@Override
-	public void onStart(EnvironmentManager manager) {
-		this.manager = manager;
-		this.level = manager.getLevel();
-	}
-
-	@Override
-	public boolean onTick(EnvironmentManager manager) {
-		return player.hasDisconnected() || player.level() != manager.getLevel();
-	}
-
-	@Override
-	public InteractionResult onUseEntity(EnvironmentManager manager, Player player, InteractionHand interactionHand, Entity entity, @Nullable EntityHitResult entityHitResult) {
+	public InteractionResult onUseEntity(Player player, InteractionHand interactionHand, Entity entity, @Nullable EntityHitResult entityHitResult) {
 		Runnable action = actions.get(entity.getUUID());
 		if (action == null) {
 			return InteractionResult.PASS;

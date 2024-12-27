@@ -1,4 +1,4 @@
-package com.infinite_parkour.infinite_parkour.world.editor;
+package com.infinite_parkour.infinite_parkour.environment.editor;
 
 import com.infinite_parkour.infinite_parkour.data.JumpBlockData;
 import com.infinite_parkour.infinite_parkour.data.JumpData;
