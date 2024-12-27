@@ -4,6 +4,7 @@
   "package": "com.infinite_parkour.infinite_parkour.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "ServerPlayerMixin"
   ],
   "client": [
   ],

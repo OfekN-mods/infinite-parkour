@@ -3,6 +3,7 @@ package com.infinite_parkour.infinite_parkour;
 import com.infinite_parkour.infinite_parkour.commands.CommandsRegister;
 import com.infinite_parkour.infinite_parkour.world.EnvironmentManager;
 import com.infinite_parkour.infinite_parkour.world.IPKLevels;
+import com.infinite_parkour.infinite_parkour.world.DynamicLevel;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -21,7 +22,8 @@ public class InfiniteParkour implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STARTED.register(this::onStart);
 		ServerTickEvents.END_SERVER_TICK.register(this::onTick);
 		ServerLifecycleEvents.SERVER_STOPPED.register(this::onStop);
-		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> IPKLevels.teleportLobby(handler.player));
+//		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> IPKLevels.teleportLobbyInit(handler.player));
+//		ServerPlayConnectionEvents.INIT.register((handler, server) -> IPKLevels.teleportLobbyInit(handler.player));
 		EnvironmentManager.registerEvents();
 	}
 
@@ -31,6 +33,7 @@ public class InfiniteParkour implements ModInitializer {
 
 	private void onStart(MinecraftServer server) {
 		IPKLevels.onStart(server);
+		DynamicLevel.onStart(server);
 		EnvironmentManager.onStart(server);
 	}
 
@@ -40,5 +43,6 @@ public class InfiniteParkour implements ModInitializer {
 
 	private void onStop(MinecraftServer server) {
 		EnvironmentManager.onStop();
+		DynamicLevel.onStop();
 	}
 }
