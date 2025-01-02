@@ -45,4 +45,14 @@ public final class IPKUtils {
 			}
 		}
 	}
+
+	public static int posToInt(BlockPos pos) {
+		return pos.getX() | pos.getY() << 6 | pos.getZ() << 12;
+	}
+
+	public static void intToPos(int posInt, BlockPos.MutableBlockPos pos) {
+		pos.setX(posInt & 0x3F);
+		pos.setY((posInt >> 6) & 0x3F);
+		pos.setZ((posInt >> 12) & 0x3F);
+	}
 }

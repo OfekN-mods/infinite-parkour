@@ -1,17 +1,13 @@
 package com.infinite_parkour.infinite_parkour.environment.editor;
 
-import com.infinite_parkour.infinite_parkour.InfiniteParkour;
 import com.infinite_parkour.infinite_parkour.environment.SinglePlayerEnvironment;
-import com.infinite_parkour.infinite_parkour.IPKUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -20,25 +16,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 
 public class EditorEnvironment extends SinglePlayerEnvironment {
-	private static final ResourceLocation STRUCT_HOLOGRAM = InfiniteParkour.loc("editor_hologram_room");
 	private final EditorItemsManager items;
 	private final EditorCanvas canvas;
+	private final EditorHolograms holograms;
 
 	public EditorEnvironment(ServerPlayer player) {
 		super(player);
 		this.items = new EditorItemsManager(player);
-		this.canvas = new EditorCanvas(player);
-
-		BlockState blockBot = Blocks.BLACK_CONCRETE.defaultBlockState();
-		BlockState blockTop = Blocks.LIGHT_BLUE_CONCRETE.defaultBlockState();
-		BlockState blockSid = Blocks.WHITE_CONCRETE.defaultBlockState();
-		IPKUtils.fill(level, blockSid, -1, 0, 0, -1, 63, 63); // x=-1
-		IPKUtils.fill(level, blockSid, 64, 0, 0, 64, 63, 63); // x=64
-		IPKUtils.fill(level, blockBot, 0, -1, 0, 63, -1, 63); // y=-1
-		IPKUtils.fill(level, blockTop, 0, 64, 0, 63, 64, 63); // y=64
-		IPKUtils.fill(level, blockSid, 0, 0, -1, 63, 63, -1); // z=-1
-		IPKUtils.fill(level, blockSid, 0, 0, 64, 63, 63, 64); // z=64
-		IPKUtils.placeStructure(level, new BlockPos(16, 31, -33), STRUCT_HOLOGRAM);
+		this.canvas = new EditorCanvas(level);
+		this.holograms = new EditorHolograms(level, canvas);
 		respawn();
 	}
 
@@ -50,7 +36,8 @@ public class EditorEnvironment extends SinglePlayerEnvironment {
 		}
 
 		giveAbilities();
-		canvas.tick(level);
+		canvas.tick();
+		holograms.tick();
 
 		if (player.getY() <= 0.01 && player.onGround()) {
 			respawn();
@@ -64,8 +51,13 @@ public class EditorEnvironment extends SinglePlayerEnvironment {
 	}
 
 	@Override
-	public InteractionResult onUseBlock(Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
-		return canvas.useBlock(level, interactionHand, blockHitResult);
+	public InteractionResult onUseBlock(Player player, InteractionHand hand, BlockHitResult blockHitResult) {
+		if (hand == InteractionHand.MAIN_HAND) {
+			if (holograms.onUseBlock(player, blockHitResult.getBlockPos())) {
+				return InteractionResult.SUCCESS;
+			}
+		}
+		return canvas.useBlock((ServerPlayer)player, hand, blockHitResult);
 	}
 
 	@Override

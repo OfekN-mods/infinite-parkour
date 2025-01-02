@@ -16,6 +16,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -116,7 +117,7 @@ public abstract class Environment {
 	// Internal functions
 
 	private void closeCallback() {
-		level.players().forEach(IPKLevels::teleportLobby);
+		new ArrayList<>(level.players()).forEach(IPKLevels::teleportLobby);
 		ENVIRONMENTS.remove(this.level, this);
 		onClose();
 	}
