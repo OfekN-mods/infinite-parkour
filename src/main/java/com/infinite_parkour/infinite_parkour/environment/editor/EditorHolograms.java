@@ -25,11 +25,13 @@ public class EditorHolograms {
 	private static final int[] POS_X = {18, 22, 26, 36, 40, 44};
 	private static final int POS_Y = 33;
 	private static final int[] POS_Z = {-20, -16, -12, -8, -4};
+	private static final int COUNT = POS_X.length * POS_Z.length;
 	private final ServerLevel level;
 	private final List<JumpData> jumps = new ArrayList<>();
 	private final List<UUID> hologramBases = new ArrayList<>();
 	private final EditorCanvas canvas;
 	private int page = 0;
+	private int loadingI = 0;
 	
 	public EditorHolograms(ServerLevel level, EditorCanvas canvas) {
 		this.level = level;
@@ -101,7 +103,7 @@ public class EditorHolograms {
 
 	@Nullable
 	private JumpData getJump(int i) {
-		i += page * 30;
+		i += page * COUNT;
 		if (i >= jumps.size()) {
 			return null;
 		}
@@ -109,7 +111,7 @@ public class EditorHolograms {
 	}
 
 	private void setJump(int i, @Nullable JumpData data) {
-		i += page * 30;
+		i += page * COUNT;
 		while (i >= jumps.size()) {
 			jumps.add(null);
 		}
@@ -121,20 +123,27 @@ public class EditorHolograms {
 		return level.getEntity(hologramBases.get(i));
 	}
 
-	private void cleanupHologram(int i) {
-		Entity entity = getHologramBase(i);
-		if (entity != null) {
-			entity.getPassengers().forEach(e -> e.remove(Entity.RemovalReason.DISCARDED));
-			level.setBlockAndUpdate(entity.blockPosition(), Blocks.ORANGE_STAINED_GLASS.defaultBlockState());
+	private void cleanupHologram(Entity base) {
+		base.getPassengers().forEach(e -> e.remove(Entity.RemovalReason.DISCARDED));
+		level.setBlockAndUpdate(base.blockPosition(), Blocks.ORANGE_STAINED_GLASS.defaultBlockState());
+	}
+
+	private void cleanupAll() {
+		for (int i = 0; i < COUNT; i++) {
+			Entity base = getHologramBase(i);
+			if (base != null) {
+				cleanupHologram(base);
+			}
 		}
+		loadingI = 0;
 	}
 
 	private void updateHologram(int i) {
-		cleanupHologram(i);
 		Entity base = getHologramBase(i);
 		if (base == null) {
 			return;
 		}
+		cleanupHologram(base);
 		JumpData jumpData = getJump(i);
 		if (jumpData == null) {
 			level.setBlockAndUpdate(base.blockPosition(), Blocks.BLACK_STAINED_GLASS.defaultBlockState());
@@ -191,7 +200,7 @@ public class EditorHolograms {
 			blockDisplay.setBlockState(blockData.state());
 			blockDisplay.setPos(base.getX(), base.getY(), base.getZ());
 			blockDisplay.setViewRange(10 / 64.0f); // 10 blocks
-			blockDisplay.setYRot(getHologramYaw());
+			blockDisplay.setYRot(yaw);
 			level.addFreshEntity(blockDisplay);
 			blockDisplay.startRiding(base, true);
 		}
@@ -199,7 +208,7 @@ public class EditorHolograms {
 
 	public void tick() {
 		float yaw = getHologramYaw();
-		for (int i = 0; i < 30; i++) {
+		for (int i = 0; i < COUNT; i++) {
 			Entity entity = getHologramBase(i);
 			if (entity == null) {
 				continue;
@@ -209,9 +218,42 @@ public class EditorHolograms {
 				passenger.setYRot(yaw);
 			}
 		}
+		if (loadingI < COUNT) {
+			updateHologram(loadingI);
+			loadingI++;
+		}
 	}
 
 	private float getHologramYaw() {
 		return (float) ((level.getGameTime() % 180) * 2);
+	}
+
+	public int getPage() {
+		return page;
+	}
+
+	public boolean setPage(int page) {
+		if (canSetPage(page)) {
+			this.page = page;
+			cleanupAll();
+			return true;
+		}
+		return false;
+	}
+
+	public boolean canSetPage(int page) {
+		if (page < 0 || page == this.page) {
+			return false;
+		}
+		int pageStart = page * COUNT;
+		if (page == 0 || pageStart < jumps.size()) {
+			return true;
+		}
+		for (int i = pageStart - COUNT; i < jumps.size(); i++) {
+			if (jumps.get(i) != null) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

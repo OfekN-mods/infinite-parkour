@@ -1,9 +1,13 @@
 package com.infinite_parkour.infinite_parkour;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
@@ -54,5 +58,12 @@ public final class IPKUtils {
 		pos.setX(posInt & 0x3F);
 		pos.setY((posInt >> 6) & 0x3F);
 		pos.setZ((posInt >> 12) & 0x3F);
+	}
+
+	public static void setAttribute(ServerPlayer player, Holder<Attribute> blockBreakSpeed, double value) {
+		var instance = player.getAttributes().getInstance(Attributes.BLOCK_BREAK_SPEED);
+		if (instance != null) {
+			instance.setBaseValue(value);
+		}
 	}
 }

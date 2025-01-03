@@ -72,7 +72,7 @@ public class FreeplayEnvironment extends SinglePlayerEnvironment {
 		createTextDisplay(x, -5.45, z, yRot, Component.literal(title).withStyle(ChatFormatting.GRAY));
 		createInteraction(x, -7.0, z, 1.1f, 2.0f, name.equals("Join us!") ?
 				this::showDiscord :
-				() -> player.displayClientMessage(Component.literal("Thanks to " + name), false)
+				player -> player.displayClientMessage(Component.literal("Thanks to " + name), false)
 		);
 	}
 
@@ -92,16 +92,16 @@ public class FreeplayEnvironment extends SinglePlayerEnvironment {
 					.withHoverEvent(HOVER_CLICK)
 			);
 
-	private void showYoutube() {
+	private void showYoutube(ServerPlayer player) {
 		player.displayClientMessage(YOUTUBE_COMPONENT, false);
 
 	}
 
-	private void showDiscord() {
+	private void showDiscord(ServerPlayer player) {
 		player.displayClientMessage(DISCORD_COMPONENT, false);
 	}
 
-	private void teleportEditor() {
+	private void teleportEditor(ServerPlayer player) {
 		delete();
 		new EditorEnvironment(player);
 	}

@@ -1,5 +1,6 @@
 package com.infinite_parkour.infinite_parkour.environment.editor;
 
+import com.infinite_parkour.infinite_parkour.IPKUtils;
 import com.infinite_parkour.infinite_parkour.environment.SinglePlayerEnvironment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -19,12 +20,14 @@ public class EditorEnvironment extends SinglePlayerEnvironment {
 	private final EditorItemsManager items;
 	private final EditorCanvas canvas;
 	private final EditorHolograms holograms;
+	private final EditorPanel panel;
 
 	public EditorEnvironment(ServerPlayer player) {
 		super(player);
 		this.items = new EditorItemsManager(player);
 		this.canvas = new EditorCanvas(level);
 		this.holograms = new EditorHolograms(level, canvas);
+		this.panel = new EditorPanel(this, holograms);
 		respawn();
 	}
 
@@ -74,8 +77,8 @@ public class EditorEnvironment extends SinglePlayerEnvironment {
 		player.getAbilities().mayfly = true;
 		player.getAbilities().instabuild = true;
 		player.onUpdateAbilities();
-		player.getAttributes().getInstance(Attributes.BLOCK_BREAK_SPEED).setBaseValue(0);
-		player.getAttributes().getInstance(Attributes.BLOCK_INTERACTION_RANGE).setBaseValue(10);
+		IPKUtils.setAttribute(player, Attributes.BLOCK_BREAK_SPEED, 0);
+		IPKUtils.setAttribute(player, Attributes.BLOCK_INTERACTION_RANGE, 10);
 	}
 
 	private void respawn() {
