@@ -17,12 +17,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 
-public class FreeplayEnvironment extends SinglePlayerEnvironment {
+public class FreeplayEnvironment extends BaseEnvironment {
 	private static final ResourceLocation STRUCT_TOP = InfiniteParkour.loc("freeplay_top");
 	private static final ResourceLocation STRUCT_BOT = InfiniteParkour.loc("freeplay_bottom");
 
 	public FreeplayEnvironment(ServerPlayer player) {
-		super(player);
 		IPKUtils.placeStructure(level, new BlockPos(-15, -11, -15), STRUCT_TOP);
 		IPKUtils.placeStructure(level, new BlockPos(-15, -42, -15), STRUCT_BOT);
 		player.teleportTo(level, 0.5, 0, 0.5, Collections.emptySet(), 0, 0, true);

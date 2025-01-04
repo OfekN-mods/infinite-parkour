@@ -1,7 +1,7 @@
 package com.infinite_parkour.infinite_parkour.environment.editor;
 
 import com.infinite_parkour.infinite_parkour.IPKUtils;
-import com.infinite_parkour.infinite_parkour.environment.SinglePlayerEnvironment;
+import com.infinite_parkour.infinite_parkour.environment.BaseEnvironment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,19 +16,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 
-public class EditorEnvironment extends SinglePlayerEnvironment {
-	private final EditorItemsManager items;
+public class EditorEnvironment extends BaseEnvironment {
 	private final EditorCanvas canvas;
 	private final EditorHolograms holograms;
 	private final EditorPanel panel;
 
 	public EditorEnvironment(ServerPlayer player) {
-		super(player);
-		this.items = new EditorItemsManager(player);
 		this.canvas = new EditorCanvas(level);
 		this.holograms = new EditorHolograms(level, canvas);
 		this.panel = new EditorPanel(this, holograms);
-		respawn();
+		respawn(player);
 	}
 
 	@Override
@@ -38,14 +35,17 @@ public class EditorEnvironment extends SinglePlayerEnvironment {
 			return;
 		}
 
-		giveAbilities();
 		canvas.tick();
 		holograms.tick();
+	}
 
+	@Override
+	public void onPlayerTick(ServerPlayer player) {
 		if (player.getY() <= 0.01 && player.onGround()) {
-			respawn();
+			respawn(player);
 		}
-		items.giveBundles();
+		EditorItemsManager.giveBundles(player);
+		giveAbilities(player);
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class EditorEnvironment extends SinglePlayerEnvironment {
 		return false;
 	}
 
-	private void giveAbilities() {
+	private void giveAbilities(ServerPlayer player) {
 		player.getAbilities().mayfly = true;
 		player.getAbilities().instabuild = true;
 		player.onUpdateAbilities();
@@ -81,7 +81,7 @@ public class EditorEnvironment extends SinglePlayerEnvironment {
 		IPKUtils.setAttribute(player, Attributes.BLOCK_INTERACTION_RANGE, 10);
 	}
 
-	private void respawn() {
+	private void respawn(ServerPlayer player) {
 		player.teleportTo(level, 31.5, 32.0, -4.5, Collections.emptySet(), 0, 0, true);
 	}
 }

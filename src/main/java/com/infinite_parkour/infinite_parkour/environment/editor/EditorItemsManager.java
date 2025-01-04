@@ -1,30 +1,23 @@
 package com.infinite_parkour.infinite_parkour.environment.editor;
 
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.BundleContents;
 
 import java.util.Objects;
 
 public class EditorItemsManager {
-	private final Player player;
-	private final Inventory inventory;
-
-	public EditorItemsManager(Player player) {
-		this.player = player;
-		this.inventory = player.getInventory();
-	}
-
-	public void giveBundles() {
+	public static void giveBundles(ServerPlayer player) {
+		Inventory inventory = player.getInventory();
 		int max = player.getPermissionLevel() >= 2 ? 10 : 9;
 		for (int i = 0; i < max; i++) {
-			giveBundle(i + 9, EditorItem.BUNDLES[i]);
+			giveBundle(inventory, i + 9, EditorItem.BUNDLES[i]);
 		}
 	}
 
-	private void giveBundle(int slot, ItemStack stack) {
+	private static void giveBundle(Inventory inventory, int slot, ItemStack stack) {
 		ItemStack oldStack = inventory.getItem(slot);
 		if (!compareBundles(oldStack, stack)) {
 			inventory.setItem(slot, stack.copy());

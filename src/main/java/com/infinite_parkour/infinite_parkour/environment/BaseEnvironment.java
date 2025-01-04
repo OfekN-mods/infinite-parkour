@@ -25,6 +25,22 @@ public abstract class BaseEnvironment extends Environment {
 	protected BaseEnvironment() {}
 
 	@Override
+	public void onTick() {
+		var players = level.players();
+		if (players.isEmpty()) {
+			delete();
+			return;
+		}
+		for (ServerPlayer player : players) {
+			onPlayerTick(player);
+		}
+	}
+
+	public void onPlayerTick(ServerPlayer player) {
+
+	}
+
+	@Override
 	public InteractionResult onUseEntity(Player player, InteractionHand interactionHand, Entity entity, @Nullable EntityHitResult entityHitResult) {
 		Consumer<ServerPlayer> action = actions.get(entity.getUUID());
 		if (action == null) {

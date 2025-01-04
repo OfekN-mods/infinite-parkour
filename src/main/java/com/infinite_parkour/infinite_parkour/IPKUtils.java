@@ -7,7 +7,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
@@ -61,7 +60,7 @@ public final class IPKUtils {
 	}
 
 	public static void setAttribute(ServerPlayer player, Holder<Attribute> blockBreakSpeed, double value) {
-		var instance = player.getAttributes().getInstance(Attributes.BLOCK_BREAK_SPEED);
+		var instance = player.getAttributes().getInstance(blockBreakSpeed);
 		if (instance != null) {
 			instance.setBaseValue(value);
 		}
