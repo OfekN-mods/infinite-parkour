@@ -17,6 +17,7 @@
   "mixins": [
     "infinite_parkour.mixins.json"
   ],
+  "accessWidener": "infinite_parkour.accesswidener",
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
